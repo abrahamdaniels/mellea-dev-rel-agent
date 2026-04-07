@@ -1,0 +1,48 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "mellea-devrel"
+version = "0.1.0"
+description = "Mellea DevRel Agent System"
+requires-python = ">=3.11"
+dependencies = [
+    "typer[all]>=0.9",
+    "PyGithub>=2.1",
+    "mellea>=0.4.0",
+    "jinja2>=3.1",
+    "httpx>=0.25",
+    "beautifulsoup4>=4.12",
+    "pyyaml>=6.0",
+    "pydantic>=2.0",
+    "pydantic-settings>=2.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-asyncio",
+    "ruff",
+]
+
+[project.scripts]
+devrel = "cli.main:app"
+
+[tool.hatch.build.targets.wheel]
+packages = ["cli", "core", "agents"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"skills" = "skills"
+"templates" = "templates"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+markers = ["integration: marks tests as integration tests (may make real API calls)"]

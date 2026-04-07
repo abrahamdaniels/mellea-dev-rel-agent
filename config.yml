@@ -1,0 +1,44 @@
+github_repo: "generative-computing/mellea"
+
+llm_backend: "ollama"
+llm_model: "granite-3.3-8b"
+llm_overrides: {}
+
+drafts_dir: "drafts"
+cache_dir: ".cache"
+cache_ttl_seconds: 3600
+
+social_char_limit_twitter: 280
+social_char_limit_linkedin: 3000
+
+# Monitor config
+monitor_mention_sources:
+  - reddit
+  - hackernews
+  - github_discussions
+  - pypi
+  - stackoverflow
+  - twitter
+  - linkedin
+monitor_keyword: "mellea"
+monitor_mention_lookback_days: 7
+briefs_dir: "briefs"
+
+# Tracker config
+tracker_project_board_id: ""
+tracker_label_prefix: "asset-tracking"
+tracker_scan_platforms:
+  - twitter
+  - linkedin
+  - huggingface
+  - ibm_research
+
+# Docs config
+docs_target_dir: "docs"
+docs_branch_prefix: "devrel/docs-update"
+docs_max_files_per_pr: 10
+
+# Demo config
+demo_output_dir: "demos"
+demo_retry_budget: 2
+demo_test_timeout: 120

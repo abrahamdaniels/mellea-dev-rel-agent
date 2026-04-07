@@ -1,0 +1,39 @@
+name: Weekly Monitor
+
+on:
+  schedule:
+    - cron: '0 9 * * 1'  # Every Monday at 9am UTC
+  workflow_dispatch:        # Manual trigger
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install -e .
+      - name: Run monitor report
+        env:
+          DEVREL_GITHUB_TOKEN: ${{ secrets.DEVREL_GITHUB_TOKEN }}
+          DEVREL_GITHUB_REPO: ${{ secrets.DEVREL_GITHUB_REPO }}
+          DEVREL_LLM_BACKEND: ${{ secrets.DEVREL_LLM_BACKEND }}
+          DEVREL_LLM_MODEL: ${{ secrets.DEVREL_LLM_MODEL }}
+        run: devrel monitor report
+      - name: Run content suggestions
+        env:
+          DEVREL_GITHUB_TOKEN: ${{ secrets.DEVREL_GITHUB_TOKEN }}
+          DEVREL_GITHUB_REPO: ${{ secrets.DEVREL_GITHUB_REPO }}
+          DEVREL_LLM_BACKEND: ${{ secrets.DEVREL_LLM_BACKEND }}
+          DEVREL_LLM_MODEL: ${{ secrets.DEVREL_LLM_MODEL }}
+        run: devrel content suggest --save
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: monitor-report-${{ github.run_id }}
+          path: |
+            drafts/monitor-report-*.md
+            drafts/content-suggest-*.md
+            briefs/
+          retention-days: 30

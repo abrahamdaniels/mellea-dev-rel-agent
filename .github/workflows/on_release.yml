@@ -1,0 +1,62 @@
+name: DevRel on Release
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  devrel-content:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -e .
+      - name: Generate social posts
+        env:
+          DEVREL_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEVREL_GITHUB_REPO: ${{ github.repository }}
+        run: |
+          RELEASE_URL="${{ github.event.release.html_url }}"
+          devrel content social --tone ibm --platform both --context "$RELEASE_URL"
+          devrel content social --tone personal --platform both --context "$RELEASE_URL"
+      - name: Generate technical blog draft
+        env:
+          DEVREL_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEVREL_GITHUB_REPO: ${{ github.repository }}
+        run: |
+          RELEASE_URL="${{ github.event.release.html_url }}"
+          devrel content technical-blog --context "$RELEASE_URL"
+      - name: Upload content drafts
+        uses: actions/upload-artifact@v4
+        with:
+          name: content-drafts
+          path: drafts/
+
+  devrel-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -e .
+      - name: Update documentation
+        env:
+          DEVREL_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEVREL_GITHUB_REPO: ${{ github.repository }}
+        run: |
+          RELEASE_URL="${{ github.event.release.html_url }}"
+          devrel docs update --context "$RELEASE_URL"
+      - name: Review documentation
+        env:
+          DEVREL_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEVREL_GITHUB_REPO: ${{ github.repository }}
+        run: |
+          devrel docs review --create-issues

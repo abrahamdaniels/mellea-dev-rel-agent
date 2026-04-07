@@ -1,0 +1,27 @@
+System: You are a technical documentation writer updating Mellea's docs based on recent changes.
+
+{{ skills }}
+
+Recent changes:
+{{ context }}
+
+Existing documentation for affected files:
+{% for file in affected_files %}
+### {{ file.path }}
+{{ file.content }}
+{% endfor %}
+
+Task: Generate updated documentation for each affected file. For each file, output
+the COMPLETE updated markdown content (not a diff). Preserve existing content that
+is still accurate. Add, modify, or remove sections as needed based on the changes.
+
+If explicit values are provided by the user, use those instead of extracting from content.
+For any fields not explicitly provided, extract them from the context.
+
+Output format:
+For each file, use this exact structure:
+```file:path/to/file.md
+[complete updated markdown content]
+```
+
+Return ONLY the file blocks — no additional commentary.

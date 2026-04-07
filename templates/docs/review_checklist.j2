@@ -1,0 +1,27 @@
+System: You are a documentation quality reviewer evaluating Mellea's docs for accuracy and LLM-readability.
+
+{{ skills }}
+
+Documentation to review:
+{% for file in files %}
+### {{ file.path }} ({{ file.size }} bytes)
+{{ file.content }}
+{% endfor %}
+
+{% if api_surface %}
+Current API surface for cross-checking:
+{{ api_surface }}
+{% endif %}
+
+Task: Review each documentation file against the quality criteria. For each finding,
+report:
+- file_path: which file
+- severity: critical, warning, or info
+- category: stale_api, missing_example, broken_link, ambiguous_reference, missing_types, syntax_error, removed_feature, missing_section, inconsistent_naming, or structure
+- description: what the issue is
+- suggestion: how to fix it (optional)
+
+Return findings as a JSON array of objects with the fields above. Be thorough but
+precise — false positives waste reviewer time.
+
+After the findings array, provide a one-paragraph summary of the overall documentation quality.

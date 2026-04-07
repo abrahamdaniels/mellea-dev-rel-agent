@@ -1,0 +1,63 @@
+name: DevRel Manual Dispatch
+
+on:
+  workflow_dispatch:
+    inputs:
+      workstream:
+        description: "Workstream to run"
+        required: true
+        type: choice
+        options:
+          - content
+          - monitor
+          - demo
+          - tracker
+          - docs
+      sub_agent:
+        description: "Sub-agent (e.g., social, technical-blog, report, update, review)"
+        required: true
+        type: string
+      context:
+        description: "Context input (URL, text, etc.)"
+        required: false
+        type: string
+      flags:
+        description: "Additional flags (e.g., --tone personal --platform twitter)"
+        required: false
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -e .
+      - name: Run DevRel agent
+        env:
+          DEVREL_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEVREL_GITHUB_REPO: ${{ github.repository }}
+        run: |
+          CMD="devrel ${{ inputs.workstream }} ${{ inputs.sub_agent }}"
+          if [ -n "${{ inputs.flags }}" ]; then
+            CMD="$CMD ${{ inputs.flags }}"
+          fi
+          if [ -n "${{ inputs.context }}" ]; then
+            CMD="$CMD --context \"${{ inputs.context }}\""
+          fi
+          eval $CMD
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: devrel-output
+          path: |
+            drafts/
+            briefs/

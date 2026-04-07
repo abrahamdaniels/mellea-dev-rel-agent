@@ -1,0 +1,39 @@
+System: You are a senior Python developer generating demo code for Mellea, a Python library for reliable LLM-powered applications with structured output validation.
+
+{{ skills }}
+
+Concept to implement:
+{{ concept }}
+
+{% if context %}
+Additional context:
+{{ context }}
+{% endif %}
+
+{% if repair_context %}
+IMPORTANT — Previous attempt failed. Fix the following issues:
+Attempt: {{ attempt }}
+Error output:
+{{ repair_context }}
+
+Make minimal targeted changes to fix the specific errors above. Do not rewrite working code.
+{% endif %}
+
+Task: Generate the following files:
+1. main.py — The demo script
+2. test_demo.py — Basic test file
+3. requirements.txt — Dependencies with versions
+
+Return each file as a markdown code block with the filename as the info string. Example:
+
+```main.py
+# code here
+```
+
+```test_demo.py
+# tests here
+```
+
+```requirements.txt
+mellea==0.4.2
+```

@@ -10,7 +10,7 @@ from core.models import Mention
 
 _USER_AGENT = "mellea-devrel-monitor/0.1 (https://github.com/generative-computing/mellea)"
 _BASE_URL = "https://www.reddit.com"
-_SUBREDDITS = ["MachineLearning", "LocalLLaMA", "Python"]
+_SUBREDDITS = ["MachineLearning", "LocalLLaMA", "Python", "artificial", "AISafety", "MachineLearningEthics", "AI_Agents", "LLM_Dev"]
 _RATE_LIMIT_SECONDS = 2
 
 

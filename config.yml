@@ -1,7 +1,7 @@
 github_repo: "generative-computing/mellea"
 
-llm_backend: "ollama"
-llm_model: "granite3.3:8b"
+llm_backend: "claude"
+llm_model: "claude-opus-4-6"
 llm_overrides: {}
 
 drafts_dir: "drafts"
@@ -22,6 +22,9 @@ monitor_mention_sources:
   - linkedin
 monitor_keyword: "mellea"
 monitor_mention_lookback_days: 7
+monitor_min_relevance_score: 2
+monitor_negative_keywords:
+  - "malleable"
 briefs_dir: "briefs"
 
 # Tracker config

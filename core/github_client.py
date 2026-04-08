@@ -311,3 +311,42 @@ class GitHubClient:
             timeout=15,
         )
         resp.raise_for_status()
+
+
+    def get_feature_status(self) -> dict:
+        """Analyze repository to determine feature availability and development status."""
+        features = {
+            "available": [],
+            "in_development": [],
+            "planned": []
+        }
+
+        try:
+            # Check __init__.py for available features
+            init_content = self.get_file_content("mellea/__init__.py")
+            if "start_session" in init_content:
+                features["available"].append("Session management")
+            if "generative" in init_content:
+                features["available"].append("@generative decorator")
+            if "loop_budget" in init_content:
+                features["available"].append("Rejection sampling")
+
+            # Check for open PRs (in development)
+            prs = self.repo.get_pulls(state="open")
+            for pr in prs[:10]:  # Check recent PRs
+                title = pr.title.lower()
+                if any(keyword in title for keyword in ["streaming", "security", "validation", "safety"]):
+                    features["in_development"].append(f"PR #{pr.number}: {pr.title}")
+
+            # Check for feature request issues (planned)
+            issues = self.repo.get_issues(state="open", labels=["enhancement"])
+            for issue in issues[:10]:  # Check recent issues
+                title = issue.title.lower()
+                if any(keyword in title for keyword in ["streaming", "security", "validation", "safety"]):
+                    features["planned"].append(f"Issue #{issue.number}: {issue.title}")
+
+        except Exception:
+            # Gracefully handle missing files or API errors
+            pass
+
+        return features

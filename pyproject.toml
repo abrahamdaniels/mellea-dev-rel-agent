@@ -28,9 +28,6 @@ dev = [
     "mypy>=1.7",
 ]
 
-[project.scripts]
-devrel = "cli.main:app"
-
 [tool.hatch.build.targets.wheel]
 packages = ["cli", "core", "agents"]
 

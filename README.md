@@ -226,7 +226,7 @@ The `config.yml` file controls LLM settings, output directories, and agent behav
 ```yaml
 # LLM backend (ollama or openai)
 llm_backend: "ollama"
-llm_model: "granite-3.3-8b"
+llm_model: "granite3.3:8b"
 
 # Per-agent model overrides
 llm_overrides:

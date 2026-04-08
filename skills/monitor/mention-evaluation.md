@@ -13,9 +13,33 @@ Instructions for assessing mention relevance and importance.
 ## Relevance Criteria
 
 A mention is relevant if it:
-1. Refers to the Mellea Python library (not the word "mellea" in other contexts)
-2. Contains substantive content (not just a name in a list with no commentary)
+1. **Explicitly mentions "Mellea"** (the Python library) - not just words containing "mellea" like "malleable"
+2. Contains substantive content about the library (not just a name in a list)
 3. Is from a real user/developer (not automated/bot content)
+4. **Relates to AI reliability, safety, trust, structured outputs, or production AI** - must connect to Mellea's core purpose
+5. **Technical context**: Discusses structured output validation, rejection sampling, LLM reliability, or similar technical concepts
+
+## Strict Filtering Rules
+
+**Exclude mentions that:**
+- Are about "malleable" anything (bones, memory, gender, etc.)
+- Don't explicitly name "Mellea" as the Python library
+- Are purely promotional or generic AI discussions
+- Lack technical substance or use case discussion
+- Are about other tools/projects with similar-sounding names
+
+**Include mentions that:**
+- Reference "Mellea" + structured outputs, AI safety, LLM validation
+- Discuss production AI reliability challenges
+- Compare Mellea to other AI safety/validation tools
+- Show practical usage of Mellea for AI trust/reliability
+- Mention specific Mellea features (start_session, loop_budget, @generative)
+
+## Quality Gates
+
+- Must contain the exact word "Mellea" (case-insensitive)
+- Must relate to AI/LLM reliability, safety, or structured outputs
+- Must show technical understanding or practical application
 
 ## Importance Scoring
 

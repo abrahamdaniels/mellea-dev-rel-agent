@@ -12,7 +12,7 @@ from core.output import save_draft
 from core.skill_loader import load_skill_content, resolve_manifest
 
 SKILL_MANIFEST = {
-    "always": ["content/suggest", "shared/mellea-knowledge"],
+    "always": ["content/suggest", "monitor/mention-evaluation", "shared/mellea-knowledge", "shared/feature-tracking"],
     "conditional": {},
     "post_processing": [],
 }
@@ -74,7 +74,19 @@ def run(
     # 3. Fetch recent GitHub activity
     github_activity = _fetch_recent_github_activity()
 
-    # 4. Load skills and generate
+    # 4. Get feature status
+    try:
+        client = GitHubClient()
+        feature_status = client.get_feature_status()
+        feature_summary = f"""
+Available features: {', '.join(feature_status.get('available', []))}
+In development: {', '.join(feature_status.get('in_development', []))}
+Planned: {', '.join(feature_status.get('planned', []))}
+""".strip()
+    except Exception:
+        feature_summary = "Feature status unavailable"
+
+    # 5. Load skills and generate
     llm = LLMClient(agent_name="content_suggest")
     skill_paths = resolve_manifest(SKILL_MANIFEST, flags={})
     skills_text = load_skill_content(skill_paths)
@@ -86,6 +98,7 @@ def run(
             "skills": skills_text,
             "brief_content": brief_content,
             "github_activity": github_activity,
+            "feature_summary": feature_summary,
             "additional_context": additional_context,
             "date": today,
         },

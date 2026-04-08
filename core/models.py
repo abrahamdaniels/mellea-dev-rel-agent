@@ -58,12 +58,21 @@ class Mention(BaseModel):
     timestamp: datetime
     score: int | None = None
     sentiment: str | None = None  # Filled by sentiment classification
+    relevance_score: int | None = None  # 1-5 importance scale
+    relevance_reason: str | None = None  # Short explanation of the score
     metadata: dict = {}
 
 
 class SentimentResult(BaseModel):
     """Structured output for sentiment classification."""
     sentiment: Literal["positive", "negative", "neutral", "mixed"]
+
+
+class RelevanceResult(BaseModel):
+    """Structured output for mention relevance evaluation."""
+    is_relevant: bool
+    relevance_score: int  # 1-5 importance scale
+    reason: str
 
 
 # --- Demo models (Phase 3) ---

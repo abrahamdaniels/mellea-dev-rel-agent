@@ -46,6 +46,8 @@ class LLMClient:
             return _ClaudeBackend(
                 model=model,
                 api_key=self._config.anthropic_api_key or self._config.llm_api_key,
+                base_url=self._config.anthropic_base_url,
+                aws_region=self._config.aws_region,
             )
         else:
             raise ValueError(f"Unknown LLM backend: {backend_name!r}")
@@ -142,18 +144,27 @@ class _OpenAIBackend:
 
 
 class _ClaudeBackend:
-    def __init__(self, model: str, api_key: str = ""):
+    def __init__(self, model: str, api_key: str = "", base_url: str = "", aws_region: str = ""):
         self.model = model
         self.api_key = api_key
+        self.base_url = base_url
+        self.aws_region = aws_region
 
     def generate(self, prompt: str) -> str:
         import anthropic  # type: ignore
 
-        # Use provided API key or fall back to environment variable
-        client = anthropic.Anthropic(api_key=self.api_key if self.api_key else None)
+        if self.aws_region and not self.base_url:
+            client = anthropic.AnthropicBedrock(aws_region=self.aws_region)
+        else:
+            kwargs: dict[str, Any] = {}
+            if self.api_key:
+                kwargs["api_key"] = self.api_key
+            if self.base_url:
+                kwargs["base_url"] = self.base_url
+            client = anthropic.Anthropic(**kwargs)
         message = client.messages.create(
             model=self.model,
-            max_tokens=2048,
+            max_tokens=4096,
             messages=[{"role": "user", "content": prompt}],
         )
-        return message.content[0].text or ""
+        return message.content[0].text

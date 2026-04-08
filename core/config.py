@@ -20,16 +20,18 @@ class DevRelConfig(BaseSettings):
     llm_model: str = "granite3.3:8b"
     llm_api_key: str = ""
     llm_overrides: dict[str, str] = {}
-    
+
     # Ollama-specific configuration
     ollama_base_url: str = "http://localhost:11434"
     ollama_api_key: str = ""
-    
+
     # OpenAI-specific configuration
     openai_api_key: str = ""
-    
+
     # Claude/Anthropic-specific configuration
     anthropic_api_key: str = ""
+    anthropic_base_url: str = ""
+    aws_region: str = ""
 
     drafts_dir: str = "drafts"
     cache_dir: str = ".cache"
@@ -42,6 +44,8 @@ class DevRelConfig(BaseSettings):
     monitor_mention_sources: list[str] = ["reddit", "hackernews", "github_discussions", "pypi"]
     monitor_keyword: str = "mellea"
     monitor_mention_lookback_days: int = 7
+    monitor_min_relevance_score: int = 2
+    monitor_negative_keywords: list[str] = ["malleable"]
     briefs_dir: str = "briefs"
 
     # Tracker config
@@ -84,3 +88,4 @@ def get_config() -> DevRelConfig:
     """Load config from config.yml, overridden by DEVREL_* environment variables."""
     yaml_values = _load_yaml_config(Path("config.yml"))
     return DevRelConfig(**yaml_values)
+

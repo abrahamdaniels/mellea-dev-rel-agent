@@ -3,11 +3,16 @@
 ## Quick Start
 
 ```bash
-# Install dev dependencies
-pip install -e ".[dev]"
+# Install in development mode with dev dependencies
+# -e: editable install (changes take effect immediately)
+# [dev]: includes testing tools (pytest, mypy, ruff)
+# Note: On macOS, use python3 -m pip instead of pip
+python3 -m pip install -e ".[dev]"
 
 # Run all unit tests
 pytest tests/ -v -m "not integration"
+# Or if pytest isn't in PATH:
+# python3 -m pytest tests/ -v -m "not integration"
 
 # Run linter
 ruff check .

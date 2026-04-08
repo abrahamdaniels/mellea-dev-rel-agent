@@ -17,8 +17,19 @@ class DevRelConfig(BaseSettings):
     github_project_id: str | None = None
 
     llm_backend: str = "ollama"
-    llm_model: str = "granite-3.3-8b"
+    llm_model: str = "granite3.3:8b"
+    llm_api_key: str = ""
     llm_overrides: dict[str, str] = {}
+    
+    # Ollama-specific configuration
+    ollama_base_url: str = "http://localhost:11434"
+    ollama_api_key: str = ""
+    
+    # OpenAI-specific configuration
+    openai_api_key: str = ""
+    
+    # Claude/Anthropic-specific configuration
+    anthropic_api_key: str = ""
 
     drafts_dir: str = "drafts"
     cache_dir: str = ".cache"

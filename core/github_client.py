@@ -2,18 +2,27 @@ from __future__ import annotations
 
 import logging
 import time
-from typing import Any
+from typing import Any, TypeVar
 
 import httpx
 from github import Github, GithubException, RateLimitExceededException
 from github.Repository import Repository
 
 from core.config import DevRelConfig, get_config
-from core.models import RetryPolicy
+from core.models import (
+    IssueData,
+    PRData,
+    ReleaseData,
+    RepoStats,
+    RetryPolicy,
+    TreeEntry,
+)
 
 logger = logging.getLogger(__name__)
 
 _GRAPHQL_URL = "https://api.github.com/graphql"
+
+T = TypeVar("T")
 
 
 class GitHubClient:
@@ -29,7 +38,7 @@ class GitHubClient:
             self._repo = self._gh.get_repo(self._config.github_repo)
         return self._repo
 
-    def _with_retry(self, fn, *args, **kwargs) -> Any:
+    def _with_retry(self, fn: type[T], *args: Any, **kwargs: Any) -> T:
         delay = self._retry.backoff_base_seconds
         for attempt in range(self._retry.max_retries):
             try:
@@ -48,9 +57,9 @@ class GitHubClient:
                 else:
                     raise
 
-    def get_pr(self, pr_number: int) -> dict:
+    def get_pr(self, pr_number: int) -> PRData:
         """Fetch PR title, body, diff stats, changed files, comments."""
-        def _fetch():
+        def _fetch() -> PRData:
             pr = self.repo.get_pull(pr_number)
             files = [
                 {"filename": f.filename, "additions": f.additions, "deletions": f.deletions}
@@ -76,9 +85,9 @@ class GitHubClient:
             }
         return self._with_retry(_fetch)
 
-    def get_issue(self, issue_number: int) -> dict:
+    def get_issue(self, issue_number: int) -> IssueData:
         """Fetch issue title, body, labels, comments."""
-        def _fetch():
+        def _fetch() -> IssueData:
             issue = self.repo.get_issue(issue_number)
             comments = [c.body for c in issue.get_comments()]
             return {
@@ -93,9 +102,9 @@ class GitHubClient:
             }
         return self._with_retry(_fetch)
 
-    def get_release(self, tag: str | None = None) -> dict:
+    def get_release(self, tag: str | None = None) -> ReleaseData:
         """Fetch release (latest if no tag). Returns tag, body, assets."""
-        def _fetch():
+        def _fetch() -> ReleaseData:
             release = self.repo.get_latest_release() if tag is None else self.repo.get_release(tag)
             return {
                 "tag": release.tag_name,
@@ -107,9 +116,9 @@ class GitHubClient:
             }
         return self._with_retry(_fetch)
 
-    def get_repo_stats(self) -> dict:
+    def get_repo_stats(self) -> RepoStats:
         """Fetch stars, forks, open issues count, contributor count."""
-        def _fetch():
+        def _fetch() -> RepoStats:
             r = self.repo
             try:
                 contributor_count = sum(1 for _ in r.get_contributors())
@@ -130,12 +139,12 @@ class GitHubClient:
             return issue.number
         return self._with_retry(_create)
 
-    def get_tree(self, path: str = "", ref: str | None = None) -> list[dict]:
+    def get_tree(self, path: str = "", ref: str | None = None) -> list[TreeEntry]:
         """List files in a directory of the repo.
 
         Returns list of dicts with keys: name, path, type (file/dir), size.
         """
-        def _fetch():
+        def _fetch() -> list[TreeEntry]:
             contents = self.repo.get_contents(path, ref=ref or self.repo.default_branch)
             if not isinstance(contents, list):
                 contents = [contents]

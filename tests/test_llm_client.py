@@ -86,6 +86,24 @@ def test_backend_selection_ollama():
     assert client._backend.model == "granite"
 
 
+def test_backend_selection_openai():
+    config = _make_config(llm_backend="openai", llm_model="gpt-4", openai_api_key="sk-test")
+    from core.llm_client import LLMClient, _OpenAIBackend
+
+    client = LLMClient(config=config)
+    assert isinstance(client._backend, _OpenAIBackend)
+    assert client._backend.model == "gpt-4"
+
+
+def test_backend_selection_claude():
+    config = _make_config(llm_backend="claude", llm_model="claude-3-5-sonnet-20241022", anthropic_api_key="sk-ant-test")
+    from core.llm_client import LLMClient, _ClaudeBackend
+
+    client = LLMClient(config=config)
+    assert isinstance(client._backend, _ClaudeBackend)
+    assert client._backend.model == "claude-3-5-sonnet-20241022"
+
+
 def test_backend_selection_unknown_raises():
     config = _make_config(llm_backend="unknown_backend")
     from core.llm_client import LLMClient

@@ -24,7 +24,7 @@ def _cache_key(value: str) -> str:
     return hashlib.sha256(value.encode()).hexdigest()
 
 
-def _read_cache(key: str) -> Any | None:
+def _read_cache(key: str) -> dict[str, Any] | None:
     config = get_config()
     cache_file = Path(config.cache_dir) / f"{key}.json"
     if not cache_file.exists():

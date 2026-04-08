@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Literal
+from typing import Literal, TypedDict
 
 from pydantic import BaseModel, model_validator
 
@@ -149,3 +149,79 @@ class ContentSuggestion(BaseModel):
     recommended_tone: str     # "personal", "ibm"
     context_reference: str    # PR URL, brief reference, or mention link
     priority: int             # 1 = highest
+
+
+# --- GitHub API Response Types (TypedDict) ---
+
+
+class DiffStats(TypedDict):
+    """Diff statistics from a PR."""
+    additions: int
+    deletions: int
+    changed_files: int
+
+
+class FileChange(TypedDict):
+    """File change info from a PR."""
+    filename: str
+    additions: int
+    deletions: int
+
+
+class PRData(TypedDict):
+    """Structured data from GitHub API for a Pull Request."""
+    number: int
+    title: str
+    body: str
+    state: str
+    author: str
+    diff_stats: DiffStats
+    changed_files: list[FileChange]
+    comments: list[str]
+    labels: list[str]
+    merged: bool
+    url: str
+
+
+class IssueData(TypedDict):
+    """Structured data from GitHub API for an Issue."""
+    number: int
+    title: str
+    body: str
+    state: str
+    author: str
+    labels: list[str]
+    comments: list[str]
+    url: str
+
+
+class ReleaseAsset(TypedDict):
+    """Asset metadata from a GitHub release."""
+    name: str
+    url: str
+
+
+class ReleaseData(TypedDict):
+    """Structured data from GitHub API for a Release."""
+    tag: str
+    title: str
+    body: str
+    url: str
+    assets: list[ReleaseAsset]
+    published_at: str | None
+
+
+class RepoStats(TypedDict):
+    """Repository statistics from GitHub API."""
+    stars: int
+    forks: int
+    open_issues: int
+    contributors: int | None
+
+
+class TreeEntry(TypedDict):
+    """File tree entry from GitHub API."""
+    name: str
+    path: str
+    type: str  # "file" or "dir"
+    size: int

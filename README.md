@@ -8,18 +8,72 @@ Every agent produces a **draft for human review**. Nothing is auto-published.
 
 ```bash
 # Install in development mode
-pip install -e ".[dev]"
+# -e flag: editable install (changes to source code take effect immediately)
+# [dev]: includes development dependencies (pytest, mypy, ruff)
+# Note: On macOS, use python3 -m pip instead of pip
+python3 -m pip install -e ".[dev]"
 
 # Set up environment
 cp .env.example .env
 # Edit .env with your GitHub token and repo
 
 # Start Ollama (default LLM backend)
-ollama pull granite-3.3-8b
+ollama pull granite3.3:8b
 
 # Try it
 devrel content suggest --stdout-only
-devrel monitor mentions --stdout-only
+```
+
+## Configuration
+
+### LLM Backend Setup
+
+The system supports both **Ollama** (default, local) and **OpenAI** backends.
+
+#### Using Ollama (Local)
+```bash
+# Install and start Ollama
+ollama pull granite4:latest
+ollama serve
+
+# .env configuration (defaults)
+DEVREL_LLM_BACKEND=ollama
+DEVREL_LLM_MODEL=granite4.latest
+DEVREL_OLLAMA_BASE_URL=http://localhost:11434
+```
+
+#### Using Ollama (Remote with API Key)
+```bash
+# .env configuration
+DEVREL_LLM_BACKEND=ollama
+DEVREL_LLM_MODEL=granite4:latest
+DEVREL_OLLAMA_BASE_URL=https://ollama.example.com
+DEVREL_OLLAMA_API_KEY=your_api_key_here
+```
+
+#### Using OpenAI
+```bash
+# .env configuration
+DEVREL_LLM_BACKEND=openai
+DEVREL_LLM_MODEL=gpt-4
+DEVREL_OPENAI_API_KEY=sk-...
+```
+
+#### Using Claude (Anthropic)
+```bash
+# .env configuration
+DEVREL_LLM_BACKEND=claude
+DEVREL_LLM_MODEL=claude-3-5-sonnet-20241022
+DEVREL_ANTHROPIC_API_KEY=sk-ant-...
+```
+
+Available Claude models: `claude-3-opus-20250219`, `claude-3-5-sonnet-20241022`, `claude-3-haiku-20250122`
+
+#### Generic API Key Configuration
+Alternatively, use the generic `DEVREL_LLM_API_KEY` for any backend:
+```bash
+DEVREL_LLM_BACKEND=openai
+DEVREL_LLM_API_KEY=sk-...
 ```
 
 ## Architecture
@@ -60,7 +114,7 @@ devrel content social --context "https://github.com/generative-computing/mellea/
 # HuggingFace-style technical blog
 devrel content technical-blog --context "https://github.com/generative-computing/mellea/releases"
 
-# IBM Research blog outline (headers + bullets, not prose)
+# IBM Research blog outlidevrel content technical-blog --context "https://github.com/generative-computing/mellea/releases"ne (headers + bullets, not prose)
 devrel content blog-outline --context "Mellea streaming validation feature"
 
 # Conversational personal blog post
@@ -224,6 +278,23 @@ ruff check .
 ```
 
 See [TESTING.md](TESTING.md) for detailed instructions, E2E smoke tests per workstream, and patterns for adding new tests.
+
+## Type Checking
+
+This project uses **mypy** for static type checking:
+
+```bash
+# Run type checker
+mypy .
+
+# Check specific files
+mypy core/github_client.py agents/
+
+# Verbose output
+mypy --verbose .
+```
+
+See [TYPE_CHECKING.md](TYPE_CHECKING.md) for type annotation guidelines, TypedDict usage for API responses, common patterns, and troubleshooting.
 
 ## Project Structure
 

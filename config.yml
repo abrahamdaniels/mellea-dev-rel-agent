@@ -1,7 +1,7 @@
 github_repo: "generative-computing/mellea"
 
 llm_backend: "ollama"
-llm_model: "granite-3.3-8b"
+llm_model: "granite3.3:8b"
 llm_overrides: {}
 
 drafts_dir: "drafts"

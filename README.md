@@ -18,7 +18,7 @@ cp .env.example .env
 # Edit .env with your GitHub token and repo
 
 # Start Ollama (default LLM backend)
-ollama pull granite3.3:8b
+ollama pull granite4:latest
 
 # Try it
 devrel content suggest --stdout-only
